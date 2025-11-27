@@ -1,0 +1,25 @@
+# docker-compose.yaml
+services:
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+    restart: unless-stopped
+    ports:
+      - "2181:2181"   # 客户端端口
+      - "8080:8080"   # AdminServer（可选）
+    environment:
+      ZOO_STANDALONE_ENABLED: "true"   # 单机模式
+      ZOO_CLIENT_PORT: "2181"          # 关键：设置 clientPort
+      ZOO_TICK_TIME: "2000"
+      ZOO_INIT_LIMIT: "10"
+      ZOO_SYNC_LIMIT: "5"
+      # 可选：开放 4lw 探针命令（用于健康检查）
+      ZOO_4LW_COMMANDS_WHITELIST: "ruok,srvr,conf,mntr"
+    volumes:
+      - ./data/zookeeper/data:/data
+      - ./data/zookeeper/datalog:/datalog
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc -w 2 127.0.0.1 2181 | grep imok"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
