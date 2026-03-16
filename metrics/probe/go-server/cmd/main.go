@@ -19,7 +19,6 @@ package main
 
 import (
 	"context"
-	"math/rand"
 	"os"
 	"os/signal"
 	"sync/atomic"
@@ -56,14 +55,7 @@ const (
 type ProbeGreetServer struct{}
 
 func (srv *ProbeGreetServer) Greet(_ context.Context, req *greet.GreetRequest) (*greet.GreetResponse, error) {
-	resp := &greet.GreetResponse{Greeting: "hello " + req.Name}
-	source := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(source)
-	if r.Intn(101) > 99 {
-		return nil, errors.New("random error")
-	}
-	time.Sleep(10 * time.Millisecond)
-	return resp, nil
+	return &greet.GreetResponse{Greeting: "hello " + req.Name}, nil
 }
 
 func main() {
@@ -144,4 +136,7 @@ func main() {
 	dependencyReady.Store(false)
 	probe.SetReady(false)
 	probe.SetStartupComplete(false)
+
+	// Wait for test to complete
+	time.Sleep(3 * time.Second)
 }

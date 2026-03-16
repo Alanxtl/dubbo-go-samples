@@ -21,7 +21,7 @@ set -e
 echo "Building probe server image..."
 
 # Build from repository root.
-cd "$(dirname "$0")/../.."
+cd "$(dirname "$0")/../../.."
 
 # Build linux binary first. This uses local `replace => ../dubbo-go` if present.
 TARGET_OS=${TARGET_OS:-linux}
