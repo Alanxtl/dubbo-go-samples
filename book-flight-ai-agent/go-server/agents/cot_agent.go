@@ -121,10 +121,10 @@ func (react *ReactAgentRunner) GetInputCtx(input string) string {
 	var respBuilder strings.Builder // Use strings.Builder
 	for _, msg := range react.memoryAgent {
 		if val, ok := msg["user"]; ok {
-			respBuilder.WriteString(fmt.Sprintf("\n%v", val))
+			fmt.Fprintf(&respBuilder, "\n%v", val)
 		}
 	}
-	respBuilder.WriteString(fmt.Sprintf("\n%v", input))
+	fmt.Fprintf(&respBuilder, "\n%v", input)
 
 	return strings.TrimSpace(respBuilder.String())
 }
