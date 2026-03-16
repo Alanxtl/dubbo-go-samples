@@ -150,11 +150,8 @@ func main() {
 		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
-		for {
-			select {
-			case <-ticker.C:
-				pushedAt.Set(float64(time.Now().Unix()))
-			}
+		for range ticker.C {
+			pushedAt.Set(float64(time.Now().Unix()))
 		}
 	}()
 
