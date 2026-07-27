@@ -19,19 +19,18 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
-)
 
-import (
 	"dubbo.apache.org/dubbo-go/v3/client"
+
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
+
 	triple "dubbo.apache.org/dubbo-go/v3/protocol/triple/triple_protocol"
-
 	"github.com/dubbogo/gost/log/logger"
-)
 
-import (
 	greet "github.com/apache/dubbo-go-samples/triple_header_trailer/proto"
 )
 
@@ -120,9 +119,27 @@ func testBidiStream(cli greet.GreetService) error {
 	if err := stream.CloseRequest(); err != nil {
 		return err
 	}
+
+	// Wait stream to reach io.EOF,
+	// Trailers aren't fully populated until Receive() returns an error wrapping [io.EOF].
+	// See dubbo-go/protocol/triple/triple_protocol/client_stream.go:265
+	for {
+		_, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if triple.IsEnded(err) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+	}
+
 	if err := stream.CloseResponse(); err != nil {
 		return err
 	}
+
 	logger.Infof("bidi response trailer %s=%v", streamTrailerKey, stream.ResponseTrailer().Values(streamTrailerKey))
 	return requireHeader(stream.ResponseTrailer(), streamTrailerKey, "bidi-trailer")
 }
