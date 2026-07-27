@@ -23,14 +23,17 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+)
 
+import (
 	"dubbo.apache.org/dubbo-go/v3/client"
-
 	_ "dubbo.apache.org/dubbo-go/v3/imports"
-
 	triple "dubbo.apache.org/dubbo-go/v3/protocol/triple/triple_protocol"
-	"github.com/dubbogo/gost/log/logger"
 
+	"github.com/dubbogo/gost/log/logger"
+)
+
+import (
 	greet "github.com/apache/dubbo-go-samples/triple_header_trailer/proto"
 )
 
